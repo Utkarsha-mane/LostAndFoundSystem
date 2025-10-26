@@ -1,0 +1,236 @@
+package lost_and_found_system;
+import java.util.*;
+public class LostAndFoundSystem {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
+
+class Items {
+	String location, description, datefound;
+	
+	Items(String location, String description, String datefound){
+		this.location = location;
+		this.datefound = datefound;
+		this.description = description;
+	}
+	
+	void display() {
+		System.out.println("Location found: " + location + "\nDate found: " + datefound + "\nAdditional information: " + description);
+	}
+}
+
+class Electronics extends Items {
+	String name, color, model; 
+	
+	Electronics(String name, String color, String model, String location, String datefound, String description){ 
+		super(location, datefound, description);
+		this.name = name;
+		this.color = color;
+		this.model = model;
+	}
+	
+	void display() {
+		System.out.println("Category: Electronics\nItem name: " + name + "\nColor: " + color + "\nBrand name/Model: " + model);
+		super.display();
+	}
+}
+
+class Daily_use extends Items {
+	String name, color;
+	
+	Daily_use(String name, String color, String location, String datefound, String description){
+		super(location,datefound,description);
+		this.name = name;
+		this.color = color;
+	}
+	
+	void display() {
+		System.out.println("Category: Daily use items\nItem name: " + name + "\nColor: " + color);
+		super.display();
+	}
+}
+
+class Stationary extends Items{
+	String name, color;
+	
+	Stationary(String name, String color, String location, String datefound, String description){
+		super(location, datefound, description);
+		this.name = name;
+		this.color = color;
+	}
+	
+	void display() {
+		System.out.println("Category: Stationary\nItem name: " + name + "\nColor: " + color);
+		super.display();
+	}
+}
+
+class Accessories extends Items{
+	String name, color;
+	
+	Accessories(String name, String color, String location, String datefound, String description){
+		super(location, datefound, description);
+		this.name = name;
+		this.color = color;
+	}
+	
+	void display() {
+		System.out.println("Category: Daily use items\nItem name: " + name + "\nColor: " + color);
+		super.display();
+	}
+}
+
+class Miscellaneous extends Items{
+	String name;
+	
+	Miscellaneous(String name, String location, String datefound, String description){
+		super(location, datefound, description);
+		this.name = name;
+	}
+	
+	void display() {
+		System.out.println("Category: Miscellaneous\nItem name: " + name);
+		super.display();
+	}
+}
+
+class IDcards extends Items{
+	String department, u_number;
+	
+	IDcards(String department, String u_number, String location, String datefound, String description){
+		super(location, datefound, description);
+		this.department = department; //2nd level of hashmap
+		this.u_number = u_number; // Additional defining criteria
+	}
+	
+	void display() {
+		System.out.println("Department: " + department + "U_number of holder: " + u_number);
+		super.display();
+	}
+}
+
+class Database {
+	Scanner Sc = new Scanner(System.in);
+	HashMap<String, HashMap<String, ArrayList<Items>>> itemlist = new HashMap<>(); //keys will be lowercase versions of categories in 1st level and name of item in 2nd level
+	String location, datefound, description, name, color;
+	
+	void registerFound() { //To enter a found item
+		System.out.println("Enter type of item:\n1. E-device\n2. Daily use item\n3. Stationary\n4. Accessories\n5. ID card\n6. Miscellaneous");
+		int menu = Sc.nextInt();
+		Sc.nextLine();
+		switch(menu) {
+		case 1:
+			System.out.println("Enter type of device (Laptop, Phone, Charger, etc.)");
+			name = Sc.nextLine().toLowerCase();
+			System.out.println("Enter device color: ");
+			color = Sc.nextLine();
+			System.out.println("Enter device brand/model: ");
+			String brand = Sc.nextLine();
+			System.out.println("Enter location item was found in: ");
+			location = Sc.nextLine();
+			System.out.println("Enter date item was found on: ");
+			datefound = Sc.nextLine();
+			System.out.println("Enter any additional item description: ");
+			description = Sc.nextLine();
+			Electronics e = new Electronics(name, color, brand, location, datefound, description);
+			
+			itemlist.computeIfAbsent("electronics" , k -> new HashMap<>()) //if electronics category is absent then add a new hashmap there
+			.computeIfAbsent(name, k -> new ArrayList<>()) //if within electronics hashmap, type of device is not present then create an arraylist for it
+			.add(e); //add object to arraylist
+			break;
+		case 2:
+			System.out.println("Enter item name: (Keys, Bottle, Umbrella, etc.)");
+			name = Sc.nextLine().toLowerCase();
+			System.out.println("Enter item color: ");
+			color = Sc.nextLine();
+			System.out.println("Enter location item was found in: ");
+			location = Sc.nextLine();
+			System.out.println("Enter date item was found on: ");
+			datefound = Sc.nextLine();
+			System.out.println("Enter any additional item description: ");
+			description = Sc.nextLine();
+			Daily_use d = new Daily_use(name, color, location, datefound, description);
+			
+			itemlist.computeIfAbsent("daily use", k -> new HashMap<>())
+			.computeIfAbsent(name, k -> new ArrayList<>())
+			.add(d);
+			break;
+		case 3:
+			System.out.println("Enter type of stationary (Books, Notebooks, Pouch, etc.)");
+			name = Sc.nextLine().toLowerCase();
+			System.out.println("Enter item color: ");
+			color = Sc.nextLine();
+			System.out.println("Enter location item was found in: ");
+			location = Sc.nextLine();
+			System.out.println("Enter date item was found on: ");
+			datefound = Sc.nextLine();
+			System.out.println("Enter any additional item description: ");
+			description = Sc.nextLine();
+			Stationary s = new Stationary(name, color, location, datefound, description);
+			
+			itemlist.computeIfAbsent("stationary", k -> new HashMap<>())
+			.computeIfAbsent(name, k -> new ArrayList<>())
+			.add(s);
+			break;
+		case 4:
+			System.out.println("Enter type of accessory (Spectacles, Watch, etc.)");
+			name = Sc.nextLine().toLowerCase();
+			System.out.println("Enter item color: ");
+			color = Sc.nextLine();
+			System.out.println("Enter location item was found in: ");
+			location = Sc.nextLine();
+			System.out.println("Enter date item was found on: ");
+			datefound = Sc.nextLine();
+			System.out.println("Enter any additional item description: ");
+			description = Sc.nextLine();
+			Accessories a = new Accessories(name, color, location, datefound, description);
+			
+			itemlist.computeIfAbsent("accessories", k -> new HashMap<>())
+			.computeIfAbsent(name, k -> new ArrayList<>())
+			.add(a);
+			break;
+		case 5:
+			System.out.println("Enter department: (COMP, ENTC, INSTRU, etc.)");
+			String department = Sc.next().toUpperCase();
+			Sc.nextLine();
+			System.out.println("Enter U_number: ");
+			String U_number = Sc.next();
+			Sc.nextLine();
+			System.out.println("Enter location item was found in: ");
+			location = Sc.nextLine();
+			System.out.println("Enter date item was found on: ");
+			datefound = Sc.nextLine();
+			System.out.println("Enter any additional item description: ");
+			description = Sc.nextLine();
+			IDcards i = new IDcards(department, U_number, location, datefound, description);
+			
+			itemlist.computeIfAbsent("idcards", k -> new HashMap<>())
+			.computeIfAbsent(department, k -> new ArrayList<>())
+			.add(i);
+			break;
+		case 6:
+			System.out.println("Enter item name: ");
+			name = Sc.nextLine();
+			System.out.println("Enter location item was found in: ");
+			location = Sc.nextLine();
+			System.out.println("Enter date item was found on: ");
+			datefound = Sc.nextLine();
+			System.out.println("Enter any additional item description: ");
+			description = Sc.nextLine();
+			Miscellaneous m = new Miscellaneous(name, location, datefound, description);
+			
+			itemlist.computeIfAbsent("miscellaneous", k -> new HashMap<>())
+			.computeIfAbsent("miscellaneous", k -> new ArrayList<>())
+			.add(m);
+			break;
+		default:
+			System.out.println("Please enter valid option.");
+			break;
+		}
+		
+	}
+}
