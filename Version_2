@@ -1,0 +1,379 @@
+package lost_and_found_system;
+import java.util.*;
+
+// ---------------- MAIN CLASS ----------------
+public class LostAndFoundSystem {
+    public static void main(String[] args) {
+        Database db = new Database();
+        Scanner sc = new Scanner(System.in);
+        int choice;
+
+        while(true) {
+            System.out.println("\n=== LOST AND FOUND SYSTEM ===");
+            System.out.println("1. Register Found Item");
+            System.out.println("2. Search Lost Item");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch(choice) {
+                case 1 -> db.registerFound();
+                case 2 -> db.searchLost();
+                case 3 -> {
+                    System.out.println("Thank you for using the system!");
+                    return;
+                }
+                default -> System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+}
+
+// ---------------- BASE CLASS ----------------
+class Items {
+    String location, description, datefound;
+    boolean isClaimed = false;
+
+    Items(String location, String description, String datefound){
+        this.location = location;
+        this.description = description;
+        this.datefound = datefound;
+    }
+
+    void display() {
+        System.out.println("Location found: " + location);
+        System.out.println("Date found: " + datefound);
+        System.out.println("Additional info: " + description);
+        System.out.println("Status: " + (isClaimed ? "Claimed ✅" : "Available"));
+    }
+}
+
+// ---------------- SUBCLASSES ----------------
+class Electronics extends Items {
+    String name, color, brandModel;
+    Electronics(String name, String color, String brandModel, String location, String description, String datefound){
+        super(location, description, datefound);
+        this.name = name;
+        this.color = color;
+        this.brandModel = brandModel;
+    }
+    void display() {
+        System.out.println("\nCategory: Electronics");
+        System.out.println("Item name: " + name);
+        System.out.println("Color: " + color);
+        System.out.println("Brand/Model: " + brandModel);
+        super.display();
+    }
+}
+
+class Daily_use extends Items {
+    String name, color;
+    Daily_use(String name, String color, String location, String description, String datefound){
+        super(location, description, datefound);
+        this.name = name;
+        this.color = color;
+    }
+    void display() {
+        System.out.println("\nCategory: Daily Use");
+        System.out.println("Item name: " + name);
+        System.out.println("Color: " + color);
+        super.display();
+    }
+}
+
+class Stationary extends Items {
+    String name, color;
+    Stationary(String name, String color, String location, String description, String datefound){
+        super(location, description, datefound);
+        this.name = name;
+        this.color = color;
+    }
+    void display() {
+        System.out.println("\nCategory: Stationary");
+        System.out.println("Item name: " + name);
+        System.out.println("Color: " + color);
+        super.display();
+    }
+}
+
+class Accessories extends Items {
+    String name, color;
+    Accessories(String name, String color, String location, String description, String datefound){
+        super(location, description, datefound);
+        this.name = name;
+        this.color = color;
+    }
+    void display() {
+        System.out.println("\nCategory: Accessories");
+        System.out.println("Item name: " + name);
+        System.out.println("Color: " + color);
+        super.display();
+    }
+}
+
+class Miscellaneous extends Items {
+    String name;
+    Miscellaneous(String name, String location, String description, String datefound){
+        super(location, description, datefound);
+        this.name = name;
+    }
+    void display() {
+        System.out.println("\nCategory: Miscellaneous");
+        System.out.println("Item name: " + name);
+        super.display();
+    }
+}
+
+class IDcards extends Items {
+    String department, u_number, year;
+    IDcards(String department, String year, String u_number, String location, String description, String datefound){
+        super(location, description, datefound);
+        this.department = department;
+        this.year = year;
+        this.u_number = u_number;
+    }
+    void display() {
+        System.out.println("\nCategory: ID Card");
+        System.out.println("Department: " + department);
+        System.out.println("Year: " + year);
+        System.out.println("U-Number: " + u_number);
+        super.display();
+    }
+}
+
+// ---------------- DATABASE CLASS ----------------
+class Database {
+    Scanner sc = new Scanner(System.in);
+    HashMap<String, HashMap<String, ArrayList<Items>>> itemlist = new HashMap<>();
+
+    // ----------- REGISTER FOUND ITEM -----------
+    void registerFound() {
+        System.out.println("\nEnter type of item found:");
+        System.out.println("1. E-device\n2. Daily use item\n3. Stationary\n4. Accessories\n5. ID card\n6. Miscellaneous");
+        int menu = sc.nextInt(); sc.nextLine();
+
+        String categoryKey = "", subKey = "";
+        Items obj = null;
+
+        switch(menu) {
+            case 1 -> {
+                categoryKey = "electronics";
+                System.out.print("Enter device name: "); String name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); String color = sc.nextLine();
+                System.out.print("Enter brand/model: "); String brandModel = sc.nextLine();
+                System.out.print("Enter location found: "); String location = sc.nextLine();
+                System.out.print("Enter description: "); String desc = sc.nextLine();
+                System.out.print("Enter date found: "); String date = sc.nextLine();
+                obj = new Electronics(name, color, brandModel, location, desc, date);
+                subKey = name;
+            }
+            case 2 -> {
+                categoryKey = "daily use";
+                System.out.print("Enter item name: "); String name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); String color = sc.nextLine();
+                System.out.print("Enter location found: "); String location = sc.nextLine();
+                System.out.print("Enter description: "); String desc = sc.nextLine();
+                System.out.print("Enter date found: "); String date = sc.nextLine();
+                obj = new Daily_use(name, color, location, desc, date);
+                subKey = name;
+            }
+            case 3 -> {
+                categoryKey = "stationary";
+                System.out.print("Enter item name: "); String name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); String color = sc.nextLine();
+                System.out.print("Enter location found: "); String location = sc.nextLine();
+                System.out.print("Enter description: "); String desc = sc.nextLine();
+                System.out.print("Enter date found: "); String date = sc.nextLine();
+                obj = new Stationary(name, color, location, desc, date);
+                subKey = name;
+            }
+            case 4 -> {
+                categoryKey = "accessories";
+                System.out.print("Enter item name: "); String name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); String color = sc.nextLine();
+                System.out.print("Enter location found: "); String location = sc.nextLine();
+                System.out.print("Enter description: "); String desc = sc.nextLine();
+                System.out.print("Enter date found: "); String date = sc.nextLine();
+                obj = new Accessories(name, color, location, desc, date);
+                subKey = name;
+            }
+            case 5 -> {
+                categoryKey = "idcards";
+                System.out.print("Enter department: "); String dept = sc.nextLine().toUpperCase();
+                System.out.print("Enter year: "); String year = sc.nextLine();
+                System.out.print("Enter U-number: "); String unum = sc.nextLine();
+                System.out.print("Enter location found: "); String location = sc.nextLine();
+                System.out.print("Enter description: "); String desc = sc.nextLine();
+                System.out.print("Enter date found: "); String date = sc.nextLine();
+                obj = new IDcards(dept, year, unum, location, desc, date);
+                subKey = dept;
+            }
+            case 6 -> {
+                categoryKey = "miscellaneous";
+                System.out.print("Enter item name: "); String name = sc.nextLine();
+                System.out.print("Enter location found: "); String location = sc.nextLine();
+                System.out.print("Enter description: "); String desc = sc.nextLine();
+                System.out.print("Enter date found: "); String date = sc.nextLine();
+                obj = new Miscellaneous(name, location, desc, date);
+                subKey = "miscellaneous";
+            }
+            default -> System.out.println("Invalid category.");
+        }
+
+        if (obj != null) {
+            itemlist.putIfAbsent(categoryKey, new HashMap<>());
+            itemlist.get(categoryKey).putIfAbsent(subKey, new ArrayList<>());
+            itemlist.get(categoryKey).get(subKey).add(obj);
+            System.out.println("\n✅ Item registered successfully!");
+        }
+    }
+
+    // ----------- SEARCH LOST ITEM -----------
+    void searchLost() {
+        System.out.println("\nEnter type of item lost:");
+        System.out.println("1. E-device\n2. Daily use item\n3. Stationary\n4. Accessories\n5. ID card\n6. Miscellaneous");
+        int menu = sc.nextInt(); sc.nextLine();
+
+        String categoryKey = "", subKey = "";
+        ArrayList<Items> authenticItems = new ArrayList<>();
+
+        switch(menu) {
+            case 1 -> {
+                categoryKey = "electronics";
+                System.out.print("Enter device name: "); subKey = sc.nextLine().toLowerCase();
+                authenticItems = verifyElectronics(categoryKey, subKey);
+            }
+            case 2 -> {
+                categoryKey = "daily use";
+                System.out.print("Enter item name: "); subKey = sc.nextLine().toLowerCase();
+                authenticItems = verifyGeneric(categoryKey, subKey);
+            }
+            case 3 -> {
+                categoryKey = "stationary";
+                System.out.print("Enter item name: "); subKey = sc.nextLine().toLowerCase();
+                authenticItems = verifyGeneric(categoryKey, subKey);
+            }
+            case 4 -> {
+                categoryKey = "accessories";
+                System.out.print("Enter item name: "); subKey = sc.nextLine().toLowerCase();
+                authenticItems = verifyGeneric(categoryKey, subKey);
+            }
+            case 5 -> {
+                categoryKey = "idcards";
+                System.out.print("Enter department: "); subKey = sc.nextLine().toUpperCase();
+                authenticItems = verifyIDCards(categoryKey, subKey);
+            }
+            case 6 -> {
+                categoryKey = "miscellaneous";
+                subKey = "miscellaneous";
+                authenticItems = verifyGeneric(categoryKey, subKey);
+            }
+            default -> {
+                System.out.println("Invalid option.");
+                return;
+            }
+        }
+
+        if (authenticItems.isEmpty()) {
+            System.out.println("\nNo authentic items found.");
+            return;
+        }
+
+        System.out.println("\n✅ Authentic items found. Displaying results:");
+        int idx = 1;
+        for (Items item : authenticItems) {
+            System.out.println("\n[" + idx + "]");
+            item.display();
+            idx++;
+        }
+
+        System.out.print("\nDo you want to claim any item? (yes/no): ");
+        String ans = sc.nextLine().toLowerCase();
+        if (ans.equals("yes")) {
+            System.out.print("Enter the item number to claim (1-" + authenticItems.size() + "): ");
+            int choice = sc.nextInt(); sc.nextLine();
+            if (choice >= 1 && choice <= authenticItems.size()) {
+                Items item = authenticItems.get(choice - 1);
+                item.isClaimed = true;
+                System.out.println("\n✅ You have successfully claimed the item!");
+            } else {
+                System.out.println("Invalid selection.");
+            }
+        }
+    }
+
+    // ----------- VERIFICATION METHODS -----------
+    ArrayList<Items> verifyElectronics(String categoryKey, String subKey) {
+        ArrayList<Items> authentic = new ArrayList<>();
+        if (!itemlist.containsKey(categoryKey) || !itemlist.get(categoryKey).containsKey(subKey)) return authentic;
+
+        for (Items item : itemlist.get(categoryKey).get(subKey)) {
+            if (item.isClaimed) continue;
+            Electronics e = (Electronics) item;
+            System.out.println("\nAnswer verification questions for '" + e.name + "':");
+
+            System.out.print("Enter color: "); String color = sc.nextLine();
+            System.out.print("Enter brand/model: "); String bm = sc.nextLine();
+            System.out.print("Enter location lost: "); String loc = sc.nextLine();
+
+            int score = 0;
+            if (color.equalsIgnoreCase(e.color)) score += 30;
+            if (bm.equalsIgnoreCase(e.brandModel)) score += 40;
+            if (loc.equalsIgnoreCase(e.location)) score += 30;
+
+            if (score >= 80) authentic.add(e);
+            else System.out.println("Verification failed for this item.");
+        }
+        return authentic;
+    }
+
+    ArrayList<Items> verifyGeneric(String categoryKey, String subKey) {
+        ArrayList<Items> authentic = new ArrayList<>();
+        if (!itemlist.containsKey(categoryKey) || !itemlist.get(categoryKey).containsKey(subKey)) return authentic;
+
+        for (Items item : itemlist.get(categoryKey).get(subKey)) {
+            if (item.isClaimed) continue;
+
+            System.out.println("\nAnswer verification questions for '" + (item instanceof Miscellaneous m ? m.name : ((Daily_use)item).name) + "':");
+            String color = "";
+            if (item instanceof Daily_use d) { System.out.print("Enter color: "); color = sc.nextLine(); if (color.equalsIgnoreCase(d.color)) authentic.add(d); }
+            else if (item instanceof Stationary s) { System.out.print("Enter color: "); color = sc.nextLine(); if (color.equalsIgnoreCase(s.color)) authentic.add(s); }
+            else if (item instanceof Accessories a) { System.out.print("Enter color: "); color = sc.nextLine(); if (color.equalsIgnoreCase(a.color)) authentic.add(a); }
+            else if (item instanceof Miscellaneous) { /* no color */ }
+
+            System.out.print("Enter location lost: "); String loc = sc.nextLine();
+            if (loc.equalsIgnoreCase(item.location)) { if (!authentic.contains(item)) authentic.add(item); }
+            else { System.out.println("Verification failed for this item."); }
+        }
+
+        return authentic;
+    }
+
+    ArrayList<Items> verifyIDCards(String categoryKey, String subKey) {
+        ArrayList<Items> authentic = new ArrayList<>();
+        if (!itemlist.containsKey(categoryKey) || !itemlist.get(categoryKey).containsKey(subKey)) return authentic;
+
+        for (Items item : itemlist.get(categoryKey).get(subKey)) {
+            if (item.isClaimed) continue;
+            IDcards id = (IDcards) item;
+
+            System.out.println("\nAnswer verification questions for ID card:");
+
+            System.out.print("Enter year: "); String year = sc.nextLine();
+            System.out.print("Enter U-number: "); String unum = sc.nextLine();
+            System.out.print("Enter location lost: "); String loc = sc.nextLine();
+
+            int score = 0;
+            if (year.equalsIgnoreCase(id.year)) score += 30;
+            if (unum.equalsIgnoreCase(id.u_number)) score += 40;
+            if (loc.equalsIgnoreCase(id.location)) score += 30;
+
+            if (score >= 60) authentic.add(id);
+            else System.out.println("❌ Verification failed for this item.");
+        }
+        return authentic;
+    }
+}
+
+
