@@ -1,6 +1,9 @@
 package lost_and_found_system;
 import java.util.*;
 
+
+// Options under each category fo subkey
+
 // ---------------- MAIN CLASS ----------------
 public class LostAndFoundSystem {
     public static void main(String[] args) {
@@ -309,7 +312,7 @@ class Database {
             return;
         }
 
-        System.out.println("\n✅ Authentic items found. Displaying results:");
+        System.out.println("\nAuthentic items found. Displaying results:");
         int idx = 1;
         for (Items item : authenticItems) {
             System.out.println("\n[" + idx + "]");
@@ -350,8 +353,9 @@ class Database {
             if (color.equalsIgnoreCase(e.color)) score += 30;
             if (bm.equalsIgnoreCase(e.brandModel)) score += 40;
             if (loc.equalsIgnoreCase(e.location)) score += 30;
+            // description criteria
 
-            if (score >= 80) authentic.add(e);
+            if (score >= 70) authentic.add(e);
             else System.out.println("Verification failed for this item.");
         }
         return authentic;
@@ -398,7 +402,7 @@ class Database {
             if (unum.equalsIgnoreCase(id.u_number)) score += 40;
             if (loc.equalsIgnoreCase(id.location)) score += 30;
 
-            if (score >= 60) authentic.add(id);
+            if (score >= 70) authentic.add(id);
             else System.out.println("Verification failed for this item.");
         }
         return authentic;
