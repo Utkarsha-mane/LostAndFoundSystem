@@ -146,7 +146,7 @@ class IDcards extends Items {
 class Database {
     Scanner sc = new Scanner(System.in);
     HashMap<String, HashMap<String, ArrayList<Items>>> itemlist = new HashMap<>();
-
+    String name, color, brandModel, location, desc, date, dept, unum, year;
     // ----------- REGISTER FOUND ITEM -----------
     void registerFound() {
         System.out.println("\nEnter type of item found:");
@@ -157,59 +157,86 @@ class Database {
         Items obj = null;
 
         switch(menu) {
-            case 1 -> {
+            case 1:
                 categoryKey = "electronics";
-                System.out.print("Enter device name: "); String name = sc.nextLine().toLowerCase();
-                System.out.print("Enter color: "); String color = sc.nextLine();
-                System.out.print("Enter brand/model: "); String brandModel = sc.nextLine();
-                System.out.print("Enter location found: "); String location = sc.nextLine();
-                System.out.print("Enter description: "); String desc = sc.nextLine();
-                System.out.print("Enter date found: "); String date = sc.nextLine();
+                System.out.print("Enter device name: "); 
+                name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); 
+                color = sc.nextLine();
+                System.out.print("Enter brand/model: "); 
+                brandModel = sc.nextLine();
+                System.out.print("Enter location found: "); 
+                location = sc.nextLine();
+                System.out.print("Enter description: "); 
+                desc = sc.nextLine();
+                System.out.print("Enter date found: "); 
+                date = sc.nextLine();
                 obj = new Electronics(name, color, brandModel, location, desc, date);
                 subKey = name;
-            }
-            case 2 -> {
+                break;
+            case 2:
                 categoryKey = "daily use";
-                System.out.print("Enter item name: "); String name = sc.nextLine().toLowerCase();
-                System.out.print("Enter color: "); String color = sc.nextLine();
-                System.out.print("Enter location found: "); String location = sc.nextLine();
-                System.out.print("Enter description: "); String desc = sc.nextLine();
-                System.out.print("Enter date found: "); String date = sc.nextLine();
+                System.out.print("Enter item name: "); 
+                name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); 
+                color = sc.nextLine();
+                System.out.print("Enter location found: "); 
+                location = sc.nextLine();
+                System.out.print("Enter description: "); 
+                desc = sc.nextLine();
+                System.out.print("Enter date found: "); 
+                date = sc.nextLine();
                 obj = new Daily_use(name, color, location, desc, date);
                 subKey = name;
-            }
-            case 3 -> {
+                break;
+            case 3:
                 categoryKey = "stationary";
-                System.out.print("Enter item name: "); String name = sc.nextLine().toLowerCase();
-                System.out.print("Enter color: "); String color = sc.nextLine();
-                System.out.print("Enter location found: "); String location = sc.nextLine();
-                System.out.print("Enter description: "); String desc = sc.nextLine();
-                System.out.print("Enter date found: "); String date = sc.nextLine();
+                System.out.print("Enter item name: "); 
+                name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); 
+                color = sc.nextLine();
+                System.out.print("Enter location found: "); 
+                location = sc.nextLine();
+                System.out.print("Enter description: "); 
+                desc = sc.nextLine();
+                System.out.print("Enter date found: "); 
+                date = sc.nextLine();
                 obj = new Stationary(name, color, location, desc, date);
                 subKey = name;
-            }
-            case 4 -> {
+                break;
+            case 4:
                 categoryKey = "accessories";
-                System.out.print("Enter item name: "); String name = sc.nextLine().toLowerCase();
-                System.out.print("Enter color: "); String color = sc.nextLine();
-                System.out.print("Enter location found: "); String location = sc.nextLine();
-                System.out.print("Enter description: "); String desc = sc.nextLine();
-                System.out.print("Enter date found: "); String date = sc.nextLine();
+                System.out.print("Enter item name: ");
+                name = sc.nextLine().toLowerCase();
+                System.out.print("Enter color: "); 
+                color = sc.nextLine();
+                System.out.print("Enter location found: "); 
+                location = sc.nextLine();
+                System.out.print("Enter description: "); 
+                desc = sc.nextLine();
+                System.out.print("Enter date found: "); 
+                date = sc.nextLine();
                 obj = new Accessories(name, color, location, desc, date);
                 subKey = name;
-            }
-            case 5 -> {
+                break;
+            case 5:
                 categoryKey = "idcards";
-                System.out.print("Enter department: "); String dept = sc.nextLine().toUpperCase();
-                System.out.print("Enter year: "); String year = sc.nextLine();
-                System.out.print("Enter U-number: "); String unum = sc.nextLine();
-                System.out.print("Enter location found: "); String location = sc.nextLine();
-                System.out.print("Enter description: "); String desc = sc.nextLine();
-                System.out.print("Enter date found: "); String date = sc.nextLine();
+                System.out.print("Enter department: "); 
+                dept = sc.nextLine().toUpperCase();
+                System.out.print("Enter year: "); 
+                year = sc.nextLine();
+                System.out.print("Enter U-number: ");
+                unum = sc.nextLine();
+                System.out.print("Enter location found: ");
+                location = sc.nextLine();
+                System.out.print("Enter description: "); 
+                desc = sc.nextLine();
+                System.out.print("Enter date found: "); 
+                date = sc.nextLine();
                 obj = new IDcards(dept, year, unum, location, desc, date);
                 subKey = dept;
-            }
-            case 6 -> {
+                break;
+            case 6:
                 categoryKey = "miscellaneous";
                 System.out.print("Enter item name: "); String name = sc.nextLine();
                 System.out.print("Enter location found: "); String location = sc.nextLine();
@@ -217,8 +244,10 @@ class Database {
                 System.out.print("Enter date found: "); String date = sc.nextLine();
                 obj = new Miscellaneous(name, location, desc, date);
                 subKey = "miscellaneous";
-            }
-            default -> System.out.println("Invalid category.");
+                break;
+            default:
+            	System.out.println("Invalid category.");
+            	break;
         }
 
         if (obj != null) {
@@ -375,5 +404,3 @@ class Database {
         return authentic;
     }
 }
-
-
