@@ -45,7 +45,7 @@ class Items {
         System.out.println("Location found: " + location);
         System.out.println("Date found: " + datefound);
         System.out.println("Additional info: " + description);
-        System.out.println("Status: " + (isClaimed ? "Claimed ✅" : "Available"));
+        System.out.println("Status: " + (isClaimed ? "Claimed" : "Available"));
     }
 }
 
@@ -225,7 +225,7 @@ class Database {
             itemlist.putIfAbsent(categoryKey, new HashMap<>());
             itemlist.get(categoryKey).putIfAbsent(subKey, new ArrayList<>());
             itemlist.get(categoryKey).get(subKey).add(obj);
-            System.out.println("\n✅ Item registered successfully!");
+            System.out.println("\nItem registered successfully!");
         }
     }
 
@@ -296,7 +296,7 @@ class Database {
             if (choice >= 1 && choice <= authenticItems.size()) {
                 Items item = authenticItems.get(choice - 1);
                 item.isClaimed = true;
-                System.out.println("\n✅ You have successfully claimed the item!");
+                System.out.println("\nYou have successfully claimed the item!");
             } else {
                 System.out.println("Invalid selection.");
             }
@@ -370,7 +370,7 @@ class Database {
             if (loc.equalsIgnoreCase(id.location)) score += 30;
 
             if (score >= 60) authentic.add(id);
-            else System.out.println("❌ Verification failed for this item.");
+            else System.out.println("Verification failed for this item.");
         }
         return authentic;
     }
