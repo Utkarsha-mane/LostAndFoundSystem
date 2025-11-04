@@ -1,0 +1,195 @@
+package lost_and_found_system;
+
+import javax.swing.*;
+import java.awt.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+// ------------------- GUI VERSION -------------------
+public class LostAndFoundUI extends JFrame {
+
+    private final LFDatabase db = new LFDatabase();
+
+    public LostAndFoundUI() {
+        setTitle("Lost and Found Management System");
+        setSize(500, 450);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+        JPanel mainPanel = new JPanel(new GridLayout(5, 1, 15, 15));
+        mainPanel.setBackground(new Color(240, 245, 255));
+
+        JLabel heading = new JLabel("Lost and Found Management System", SwingConstants.CENTER);
+        heading.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        heading.setForeground(new Color(60, 70, 120));
+
+        JButton registerBtn = createButton("📝 Register Found Item");
+        JButton searchBtn = createButton("🔍 Search Lost Item");
+        JButton viewBtn = createButton("📦 View All Items");
+        JButton exitBtn = createButton("🚪 Exit");
+
+        mainPanel.add(heading);
+        mainPanel.add(registerBtn);
+        mainPanel.add(searchBtn);
+        mainPanel.add(viewBtn);
+        mainPanel.add(exitBtn);
+        add(mainPanel);
+
+        registerBtn.addActionListener(e -> registerItem());
+        searchBtn.addActionListener(e -> searchItem());
+        viewBtn.addActionListener(e -> viewItems());
+        exitBtn.addActionListener(e -> System.exit(0));
+    }
+
+    private JButton createButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setBackground(new Color(100, 150, 255));
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
+    // ---------------- Register Item ----------------
+    private void registerItem() {
+        String[] categories = {"Electronics", "Daily Use", "Stationary", "Accessories", "Miscellaneous", "ID Card"};
+        String category = (String) JOptionPane.showInputDialog(this,
+                "Select item category:", "Item Type",
+                JOptionPane.QUESTION_MESSAGE, null, categories, categories[0]);
+
+        if (category == null) return;
+
+        JTextField name = new JTextField();
+        JTextField color = new JTextField();
+        JTextField location = new JTextField();
+        JTextField date = new JTextField();
+
+        Object[] fields = {
+                "Item Name:", name,
+                "Color:", color,
+                "Location Found:", location,
+                "Date Found (dd/mm/yyyy):", date
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, fields,
+                "Register " + category, JOptionPane.OK_CANCEL_OPTION);
+
+        if (option == JOptionPane.OK_OPTION) {
+            if (name.getText().isEmpty() || location.getText().isEmpty() || date.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "⚠️ Please fill all fields!", "Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (!validateDate(date.getText())) return;
+
+            db.addItem(new Item(category, name.getText(), color.getText(), location.getText(), date.getText()));
+            JOptionPane.showMessageDialog(this, "✅ " + category + " registered successfully!");
+        }
+    }
+
+    // ---------------- Date Validation ----------------
+    private boolean validateDate(String dateInput) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+        LocalDate today = LocalDate.now();
+
+        try {
+            LocalDate entered = LocalDate.parse(dateInput, formatter);
+            long diff = ChronoUnit.DAYS.between(entered, today);
+
+            if (diff < 0) {
+                JOptionPane.showMessageDialog(this, "❌ Date cannot be in the future!", "Invalid Date", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else if (diff > 20) {
+                JOptionPane.showMessageDialog(this, "⚠️ Date too old! Enter a date within the last 20 days.", "Invalid Date", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+            return true;
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "❌ Invalid format! Please use dd/mm/yyyy.", "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    // ---------------- Search Item ----------------
+    private void searchItem() {
+        String search = JOptionPane.showInputDialog(this, "Enter item name or color to search:");
+        if (search == null || search.trim().isEmpty()) return;
+
+        List<Item> results = db.searchItem(search.toLowerCase());
+
+        if (results.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "❌ No matching items found!");
+        } else {
+            StringBuilder sb = new StringBuilder("🔎 Matching Items:\n\n");
+            for (Item i : results) sb.append(i).append("\n");
+            JOptionPane.showMessageDialog(this, sb.toString());
+        }
+    }
+
+    // ---------------- View All Items ----------------
+    private void viewItems() {
+        List<Item> items = db.getAllItems();
+        if (items.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "📭 No items registered yet!");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("📦 All Registered Items:\n\n");
+        for (Item i : items) sb.append(i).append("\n");
+        JOptionPane.showMessageDialog(this, sb.toString());
+    }
+
+    // ---------------- Main Method ----------------
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new LostAndFoundUI().setVisible(true));
+    }
+}
+
+// ------------------- Database -------------------
+class LFDatabase {
+    private final List<Item> items = new ArrayList<>();
+
+    void addItem(Item item) {
+        items.add(item);
+    }
+
+    List<Item> searchItem(String key) {
+        List<Item> results = new ArrayList<>();
+        for (Item i : items) {
+            if (i.name.toLowerCase().contains(key) || i.color.toLowerCase().contains(key))
+                results.add(i);
+        }
+        return results;
+    }
+
+    List<Item> getAllItems() {
+        return items;
+    }
+}
+
+// ------------------- Item Class -------------------
+class Item {
+    String category, name, color, location, date;
+
+    Item(String category, String name, String color, String location, String date) {
+        this.category = category;
+        this.name = name;
+        this.color = color;
+        this.location = location;
+        this.date = date;
+    }
+
+    public String toString() {
+        return "📁 Category: " + category +
+                "\n📍 " + name + " (" + (color.isEmpty() ? "N/A" : color) + ")" +
+                "\nLocation: " + location +
+                "\nDate Found: " + date + "\n";
+    }
+}
