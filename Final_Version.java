@@ -1,0 +1,340 @@
+package lost_and_found_system;
+
+import java.util.*;
+
+class Item 
+{
+    int id;
+    String category;
+    String name;
+    String combinedDescription;
+    String date;
+
+    Item(int id, String category, String name, String combinedDescription) 
+    {
+        this.id = id;
+        this.category = category;
+        this.name = name;
+        this.combinedDescription = combinedDescription.toLowerCase();
+    }
+
+    void displayFull() 
+    {
+        System.out.println("\nID: " + id);
+        System.out.println("Category: " + category + " | " + "Name: " + name);
+    }
+}
+
+class LostFoundDatabase 
+{
+    private HashMap<String, HashMap<String, Item>> registry; // 2 level hashMap ....category + (HashMap()→ combined string → item)
+    private Scanner sc;
+    private int nextId = 1;
+
+    LostFoundDatabase() 
+    {
+        registry = new HashMap<>();
+        sc = new Scanner(System.in);
+    }
+
+    private String getInput(String prompt) 
+    {
+        System.out.print(prompt);
+        return sc.nextLine().trim();
+    }
+
+    // Register a Found Item
+    void registerFound() 
+    {
+        System.out.println("\n--- Register Found Item ---");
+        System.out.println("1. Electronics");
+        System.out.println("2. Daily Use");
+        System.out.println("3. Stationary");
+        System.out.println("4. Accessories");
+        System.out.println("5. Miscellaneous");
+        System.out.println("6. ID Card");
+        System.out.print("Enter category number: ");
+        String choice = sc.nextLine().trim();
+
+        String category, name, combined;
+        switch (choice) 
+        {
+            case "1" -> {
+                category = "Electronics";
+                name = getInput("Enter device name: ");
+                String brand = getInput("Enter brand/model: ");
+                String color = getInput("Enter color: ");
+                String loc = getInput("Enter location found: ");
+                String date = getInput("Enter date found: ");
+                String desc = getInput("Enter extra description: ");
+                combined = (name + " " + brand + " " + color + " " + loc + " " + date + " " + desc).toLowerCase();
+            }
+            case "2" -> {
+                category = "Daily Use";
+                name = getInput("Enter item name: ");
+                String color = getInput("Enter color: ");
+                String loc = getInput("Enter location found: ");
+                String date = getInput("Enter date found: ");
+                String desc = getInput("Enter description: ");
+                combined = (name + " " + color + " " + loc + " " + date + " " + desc).toLowerCase();
+            }
+            case "3" -> {
+                category = "Stationary";
+                name = getInput("Enter item name: ");
+                String color = getInput("Enter color: ");
+                String loc = getInput("Enter location found: ");
+                String date = getInput("Enter date found: ");
+                String desc = getInput("Enter any description: ");
+                combined = (name + " " + color + " " + loc + " " + date + " " + desc).toLowerCase();
+            }
+            case "4" -> {
+                category = "Accessories";
+                name = getInput("Enter item name: ");
+                String color = getInput("Enter color: ");
+                String loc = getInput("Enter location found: ");
+                String date = getInput("Enter date found: ");
+                String desc = getInput("Enter any description: ");
+                combined = (name + " " + color + " " + loc + " " + date + " " + desc).toLowerCase();
+            }
+            case "5" -> {
+                category = "Miscellaneous";
+                name = getInput("Enter item name: ");
+                String loc = getInput("Enter location found: ");
+                String date = getInput("Enter date found: ");
+                String desc = getInput("Enter description: ");
+                combined = (name + " " + loc + " " + date + " " + desc).toLowerCase();
+            }
+            case "6" -> {
+                category = "ID Card";
+                name = getInput("Enter cardholder name: ");
+                String dept = getInput("Enter department: ");
+                String uNo = getInput("Enter U-Number: ");
+                String year = getInput("Enter year: ");
+                String loc = getInput("Enter location found: ");
+                String date = getInput("Enter date found: ");
+                combined = (name + " " + dept + " " + uNo + " " + year + " " + loc + " " + date).toLowerCase();     //stored as a combined key of all these parameters for the comparison
+            }
+            default -> {
+                System.out.println("Invalid choice.");
+                return;
+            }
+        }
+
+        Item item = new Item(nextId++, category, name, combined);       // New object of key - value pair to be hashed
+        registry.putIfAbsent(category, new HashMap<>());                // To ensure the category exists in the outer map, if not then creates a new inner map of that category
+        registry.get(category).put(combined, item);                     // Adds the item to the inner map using the combined attribute string as the 'key' and Actual item as 'Value'
+
+        System.out.println("\nFound item registered successfully!");
+    }
+
+    // Search / Register Lost Item
+    void registerLost() 
+    {
+        System.out.println("\n--- Register Lost Item ---");
+        System.out.println("1. Electronics");
+        System.out.println("2. Daily Use");
+        System.out.println("3. Stationary");
+        System.out.println("4. Accessories");
+        System.out.println("5. Miscellaneous");
+        System.out.println("6. ID Card");
+        System.out.print("Enter category number: ");
+        String choice = sc.nextLine().trim();
+
+        String category = switch (choice) 
+        {
+            case "1" -> "Electronics";
+            case "2" -> "Daily Use";
+            case "3" -> "Stationary";
+            case "4" -> "Accessories";
+            case "5" -> "Miscellaneous";
+            case "6" -> "ID Card";
+            default -> {
+                System.out.println("Invalid choice.");
+                yield null;
+            }
+        };
+        if (category == null) return;            // Separately mentioned because we want a result from switch to be stored in string category and hence switch can't directly 'return' 
+
+        String query = getInput("Enter description of your lost item (Mention object name, brand, color, any specific description, location where it was lost, etc.): ").toLowerCase();
+        searchAndClaim(category, query);        // Search method  works on string matching based on distance calculation as per the char manipulation score...like BK Tree algo
+    }
+
+    
+    // Search and Claim Method
+    void searchAndClaim(String category, String query) 
+    {
+    	
+        // Check if category exists or is empty
+        if (!registry.containsKey(category) || registry.get(category).isEmpty()) 
+        {
+            System.out.println("\nNo found items in this category yet.");
+            return;
+        }
+
+        HashMap<String, Item> items = registry.get(category);          // HashMap to store item registry of a particular category ---> 2nd level of hashMap
+
+        // PriorityQueue to store items with highest similarity first
+        PriorityQueue<Map.Entry<Item, Double>> pq = new PriorityQueue<>
+        (
+            (a, b) -> Double.compare(b.getValue(), a.getValue())
+        );
+        
+        // In above priority queue Map.Entry(x,y) is used to store key-value pairs in pq, where key is of type 'Item' and value is of type 'Double' 
+
+        // Calculate similarity for each item
+        for (Item obj : items.values()) 
+        {
+        	// items.values() will return objects of type 'Item' that means actual items in found registry
+            double score = similarityScore(query, obj.combinedDescription);      // It's a method that returns score of how much the user entered desc matches the combinedStrings in item registry 
+            
+            if (score > 0.3) 
+            { 
+            	// consider only reasonably similar ones
+                pq.offer(Map.entry(obj, score));      // pq.offer() adds custom types of data obj to pq...here data obj is a key-value pair which is generated using Map.entry()
+            }
+        }
+
+        // If no matching items
+        if (pq.isEmpty()) 
+        {
+            System.out.println("\nNo similar items found.");
+            return;
+        }
+
+        System.out.println("\nTop Matching Items:");
+        List<Item> topMatches = new ArrayList<>();              // Maintained to store the top 3 matches ...bcz we want to delete the claimed obj from registry after the claim, as we can't search that again in pq
+        int count = 0;
+
+        // Show top 3 most similar items
+        while (!pq.isEmpty() && count < 3) 
+        {
+            Map.Entry<Item, Double> entry = pq.poll();         // 'entry' is obj of type key-value pair similar to the ones that are stored in pq 
+            count++;
+            System.out.printf("\n[%d] Similarity: %.2f%%\n", count, entry.getValue() * 100);        // For display of top 3 to user who's searching lost item....getValue()  returns 'MatchingScore' of particular item with user entered description
+            entry.getKey().displayFull();           // display item details
+            topMatches.add(entry.getKey());         // adding top 3 items to topMatches arrayList  
+        }
+
+        // Let user claim one of them
+        System.out.print("\nEnter number (1-3) of the item you want to claim, or 0 to cancel: ");
+        String input = sc.nextLine().trim();
+
+        try 
+        {
+            int choice = Integer.parseInt(input);
+            if (choice >= 1 && choice <= topMatches.size()) 
+            {
+                Item selected = topMatches.get(choice - 1);
+                registry.get(selected.category).remove(selected.combinedDescription);          // removing claimed item from registry of particular category
+                System.out.println("\nItem with ID " + selected.id + " has been successfully claimed!");
+                System.out.println("You can collect it from 'Lost and Found Department, IT Building, 3rd Floor'.");
+            } 
+            else 
+            {
+                System.out.println("No item claimed.");
+            }
+        } 
+        catch (NumberFormatException e) 
+        {
+            System.out.println("Invalid input.");
+        }
+    }
+
+    // Calculates similarity score (0 to 1) based on edit distance
+    double similarityScore(String str1, String str2) 
+    {
+        int distance = editDistance(str1, str2);
+        int maxLength = Math.max(str1.length(), str2.length());      // returns max of lengths of 2 strings passed 
+        if (maxLength == 0) return 1.0;
+        return 1.0 - ((double) distance / maxLength);
+    }
+
+    // Computes edit distance (Levenshtein distance) between two strings
+    int editDistance(String a, String b) 
+    {
+        int n = a.length(), m = b.length();
+        int[][] dp = new int[n + 1][m + 1];
+
+        // Base cases   ... to initialize both strings as an empty string first
+        for (int i = 0; i <= n; i++) 
+        {
+        	dp[i][0] = i;
+        }
+        for (int j = 0; j <= m; j++) 
+        {
+        	dp[0][j] = j;
+        }
+
+        // Fill DP table
+        for (int i = 1; i <= n; i++) 
+        {
+            for (int j = 1; j <= m; j++) 
+            {
+            	int cost;
+            	if (a.charAt(i - 1) == b.charAt(j - 1)) 
+            	{
+            	    cost = 0;   // No change needed if characters are same
+            	} 
+            	else 
+            	{
+            	    cost = 1;   // 1 operation (substitution) if characters differ
+            	}
+
+
+                dp[i][j] = Math.min(
+                    Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1),  // insertion or deletion
+                    dp[i - 1][j - 1] + cost                         // substitution
+                );
+            }
+        }
+
+        return dp[n][m];
+    }
+
+
+    // Method to display all the existing registered items
+    void showAllFoundItems() 
+    {
+        System.out.println("\n--- All Found Items ---");
+        int count = 0;
+        for (Map.Entry<String, HashMap<String, Item>> entry : registry.entrySet()) 
+        {
+            for (Item obj : entry.getValue().values()) 
+            {
+                obj.displayFull();
+                count++;
+            }
+        }
+        if (count == 0) System.out.println("No items currently registered.");
+    }
+}
+
+public class LostAndFoundSystem {
+    public static void main(String[] args) {
+        LostFoundDatabase db = new LostFoundDatabase();
+        Scanner sc = new Scanner(System.in);
+
+        while (true) 
+        {
+            System.out.println("\n--- Lost and Found Management System ---");
+            System.out.println("1. Register Found Item");
+            System.out.println("2. Register Lost Item & Search/Claim");
+            System.out.println("3. Show All Found Items");
+            System.out.println("4. Exit");
+            System.out.print("Enter choice: ");
+            String choice = sc.nextLine().trim();
+
+            switch (choice) 
+            {
+                case "1" -> db.registerFound();
+                case "2" -> db.registerLost();
+                case "3" -> db.showAllFoundItems();
+                case "4" -> {
+                    System.out.println("Exiting... Goodbye!");
+                    return;
+                }
+                default -> System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+}
