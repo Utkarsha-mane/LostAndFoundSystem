@@ -44,7 +44,7 @@ class LostFoundDatabase
         System.out.print(prompt);
         return sc.nextLine().trim();
     }
- // Validates date format and ensures it's not in the future
+ // Validates date format 
     private String validateDate(String prompt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -154,7 +154,7 @@ class LostFoundDatabase
     // Search / Register Lost Item
     void registerLost() 
     {
-        System.out.println("\n--- Register Lost Item ---");
+        System.out.println("\n--- Search for Lost Item ---");
         System.out.println("1. Electronics");
         System.out.println("2. Daily Use");
         System.out.println("3. Stationary");
@@ -342,7 +342,7 @@ public class LostAndFoundSystem {
         {
             System.out.println("\n--- Lost and Found Management System ---");
             System.out.println("1. Register Found Item");
-            System.out.println("2. Register Lost Item & Search/Claim");
+            System.out.println("2. Search for Lost Item & Claim");
             System.out.println("3. Show All Found Items");
             System.out.println("4. Exit");
             System.out.print("Enter choice: ");
